@@ -26,6 +26,13 @@ pub const login = struct {
         const self: *login = @ptrCast(@alignCast(ptr));
 
         switch (event) {
+            .mouse => |mouse| {
+                if (mouse.type == .press and mouse.button == .left) {
+                    // click this field to focus it
+                    return ctx.requestFocus(self.widget());
+                }
+                return ctx.consumeEvent();
+            },
             .init => return ctx.requestFocus(self.email.widget()),
             .key_press => |key| {
                 if (key.matches('c', .{ .ctrl = true })) {
@@ -36,9 +43,11 @@ pub const login = struct {
                     switch (self.focused) {
                         .email => {
                             self.focused = .password;
+                            try ctx.requestFocus(self.password.widget());
                         },
                         .password => {
                             self.focused = .email;
+                            try ctx.requestFocus(self.email.widget());
                         },
                     }
                 }
@@ -46,21 +55,20 @@ pub const login = struct {
                 switch (self.focused) {
                     .email => {
                         try self.email.handleEvent(ctx, .{ .key_press = key });
-                        return ctx.requestFocus(self.email.widget());
+
+                        return;
                     },
                     .password => {
                         try self.password.handleEvent(ctx, .{ .key_press = key });
-                        return ctx.requestFocus(self.password.widget());
+
+                        return;
                     },
                 }
 
                 // for a simple login form, route keys to the email field
 
             },
-            .focus_in => {
-                // do not steal focus back to the button here
-                return;
-            },
+            .focus_out, .focus_in => ctx.redraw = true,
             else => {},
         }
     }
