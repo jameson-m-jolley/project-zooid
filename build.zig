@@ -68,27 +68,33 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const vaxis_dep = b.dependency("vaxis", .{
+    // UI___________________________________________________________________________________________
+    const tui = b.addExecutable(.{
+        .name = "zooid_ui",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/ui/main.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{
+                .{ .name = "libzooid", .module = zooid_module },
+            },
+        }),
+    });
+
+    const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
         .optimize = optimize,
     });
 
-    // TUI___________________________________________________________________________________________
-    const tui = b.addExecutable(.{
-        .name = "zooid_tui",
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("src/tui/main.zig"),
-            .target = target,
-            .optimize = optimize,
-            .imports = &.{
-                .{ .name = "project_zooid", .module = zooid_module },
-            },
-        }),
-    });
+    const raylib = raylib_dep.module("raylib"); // main raylib module
+    const raygui = raylib_dep.module("raygui"); // raygui module
+    const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
+    tui.root_module.linkLibrary(raylib_artifact);
+    tui.root_module.addImport("raylib", raylib);
+    tui.root_module.addImport("raygui", raygui);
     b.installArtifact(tui);
     tui.root_module.addImport("args", args_dep.module("args"));
-    tui.root_module.addImport("vaxis", vaxis_dep.module("vaxis"));
-    const run_tui_step = b.step("run-tui", "Run the tui app");
+    const run_tui_step = b.step("run-ui", "Run the ui app");
 
     const run_tui = b.addRunArtifact(tui);
     run_tui_step.dependOn(&run_tui.step);

@@ -100,7 +100,7 @@ pub fn main(init: std.process.Init) !void {
 
             if (res) {
                 stdout.print("[cli] starting login...\n", .{}) catch unreachable;
-                zooid.client_type.login(zooid_system_obj, "jameson.m.jolley@gmail.com");
+                //zooid.client_type.login("jameson.m.jolley@gmail.com");
             } else {
                 stdout.print("[cli] db is not found run doctor reinstall...\n", .{}) catch unreachable;
             }

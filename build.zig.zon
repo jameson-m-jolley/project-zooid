@@ -32,10 +32,6 @@
     // Once all dependencies are fetched, `zig build` no longer requires
     // internet connectivity.
     .dependencies = .{
-        .vaxis = .{
-            .url = "git+https://github.com/rockorager/libvaxis.git#d4c3b3666e0c090e2b5092ca09893c6db15e0b79",
-            .hash = "vaxis-0.6.0-BWNV_O8ODQBFLRjA4D0q75pHPh63iPu_v0yhpCwsAMaM",
-        },
         .args = .{
             .url = "https://github.com/muhammad-fiaz/args.zig/archive/refs/tags/0.0.8.tar.gz",
             .hash = "args-0.0.8-8hzgbsBECgD3C0uPaFNcK9UFTZ210rWU4XIhopR8snoA",
@@ -47,6 +43,10 @@
         .curl = .{
             .url = "git+https://github.com/jiacai2050/zig-curl.git#9c0f1d211ad22dd0f4c20aa54060c1d9f163595a",
             .hash = "curl-0.6.0-dev-P4tT4W7_AAAEPibcTLuVEkwsmt61vws3n0pBs0DpAmv9",
+        },
+        .raylib_zig = .{
+            .url = "git+https://github.com/raylib-zig/raylib-zig?ref=devel#28bbe30112f605da918db00eff53a75ce1aa9180",
+            .hash = "raylib_zig-6.2.0-KE8RELGmBQDX1v1DqBN57pNxJ-b-MIa1S-M7NXT9Eplr",
         },
     },
     .paths = .{

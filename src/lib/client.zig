@@ -28,8 +28,8 @@ pub fn gen_zooid_client_struct(comptime build_options: shared.build_options) typ
         }
 
         pub fn login(self: *@This(), system_call_obj: system.gen_zooid_system_obj(build_options)) void {
-            if (self.email) |_| {
-                system_call_obj.print("[zooid] logging in with email {s}", .{});
+            if (self.email) |e| {
+                system_call_obj.print("[zooid] logging in with email {s}", .{e});
             }
         }
     };
