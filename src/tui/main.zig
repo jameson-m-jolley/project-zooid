@@ -62,7 +62,6 @@ pub fn main(init: std.process.Init) !void {
         .onClick = login_widget.login.onClick,
         .userdata = model,
     }, .password = .{ .buf = .init(alloc) }, .email = .{ .buf = .init(alloc) } };
-    model.button.userdata = &app;
 
     try app.run(model.widget(), .{});
 }

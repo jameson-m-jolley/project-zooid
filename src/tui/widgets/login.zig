@@ -54,12 +54,12 @@ pub const login = struct {
 
                 switch (self.focused) {
                     .email => {
-                        try self.email.handleEvent(ctx, .{ .key_press = key });
+                        self.email.handleEvent(ctx, .{ .key_press = key }) catch {};
 
                         return;
                     },
                     .password => {
-                        try self.password.handleEvent(ctx, .{ .key_press = key });
+                        self.password.handleEvent(ctx, .{ .key_press = key }) catch {};
 
                         return;
                     },
