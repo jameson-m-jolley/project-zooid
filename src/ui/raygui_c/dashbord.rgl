@@ -1,0 +1,31 @@
+#
+# rgl layout text file (v4.0) - raygui layout file generated using rGuiLayout
+#
+# Number of controls:     19
+#
+# Ref. window:    r <x> <y> <width> <height>
+# Anchor info:    a <id> <name> <posx> <posy> <enabled>
+# Control info:   c <id> <type> <name> <rectangle> <anchor_id> <text>
+#
+r 0 40 -1 -1
+a 001 anchor01 24 24 1
+a 002 anchor02 280 32 1
+c 000 1 GroupBox000 0 8 240 688 1 SAMPLE TEXT
+c 001 1 GroupBox001 0 0 800 688 2 messages
+c 002 12 TextBox002 8 648 664 32 2 SAMPLE TEXT
+c 003 5 Button003 688 648 96 32 2  >>>
+c 004 15 Spinner005 624 16 160 32 2 page#
+c 005 12 TextBox005 16 16 216 32 2 search
+c 006 2 Line006 16 56 768 16 2 
+c 007 2 Line007 8 624 776 12 2 
+c 008 21 ListView008 8 96 224 96 1 ONE;TWO;THREE
+c 009 12 TextBox009 8 56 224 32 1 SAMPLE TEXT
+c 010 2 Line010 8 248 224 16 1 
+c 011 21 ListView011 8 312 224 176 1 ONE;TWO;THREE
+c 012 23 DummyRec012 8 272 224 32 1 friends
+c 013 23 DummyRec013 8 16 224 32 1 zooid colonys
+c 014 5 Button019 8 496 224 32 1 settings
+c 015 5 Button015 8 200 224 40 1 settings
+c 016 2 Line016 8 536 224 16 1 
+c 017 20 ScrollPanel017 8 592 224 96 1 
+c 018 23 DummyRec018 8 552 224 32 1 zooid_logs

@@ -1,7 +1,10 @@
 const std = @import("std");
 const args = @import("args");
 const rl = @import("raylib");
-const main_v = @import("gui_main.zig");
+const main_v = @import("main_dashbord.zig");
+const login_v = @import("login.zig");
+const settings_v = @import("settings.zig");
+extern fn glfwWaitEvents() callconv(.c) void;
 
 const Io = std.Io;
 
@@ -104,16 +107,15 @@ pub fn main(init: std.process.Init) !void {
 }
 
 pub fn start_ui(allocator: std.mem.Allocator) anyerror!void {
-    _ = allocator;
+
     // Initialization
     //--------------------------------------------------------------------------------------
-    const screenWidth = 800;
-    const screenHeight = 450;
+    const screenWidth = 1920;
+    const screenHeight = 1080;
 
     rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.closeWindow(); // Close window and OpenGL context
-
-    rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
+    rl.setTargetFPS(0); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -125,11 +127,23 @@ pub fn start_ui(allocator: std.mem.Allocator) anyerror!void {
 
         // Draw
         //----------------------------------------------------------------------------------
+        glfwWaitEvents();
+        rl.clearBackground(.white);
         rl.beginDrawing();
         defer rl.endDrawing();
-
-        rl.clearBackground(.white);
-        rl.drawText("Congrats! You created your first window!", 190, 200, 20, .light_gray);
+        var main_dash = main_v.MainDashbord.init(
+            allocator,
+            screenWidth,
+            screenHeight,
+        );
+        defer main_dash.deinit();
+        var login_gui = login_v.LoginGui.init(allocator);
+        defer login_gui.deinit();
+        var settings_gui = settings_v.SettingsGui.init(allocator);
+        defer settings_gui.deinit();
+        main_dash.draw();
+        login_gui.draw();
+        settings_gui.draw();
 
         //----------------------------------------------------------------------------------
     }
