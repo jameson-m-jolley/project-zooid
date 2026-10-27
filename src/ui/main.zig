@@ -1,14 +1,13 @@
 const std = @import("std");
 const args = @import("args");
 const rl = @import("raylib");
-const main_v = @import("main_dashbord.zig");
-const login_v = @import("login.zig");
-const settings_v = @import("settings.zig");
-extern fn glfwWaitEvents() callconv(.c) void;
+const controller_lib = @import("controller.zig");
 
 const Io = std.Io;
 
 const zooid = @import("libzooid");
+
+const Controller = controller_lib.gen_controller();
 
 pub fn set_up_flags(parser: *args.ArgumentParser) !void {
     try parser.addFlag("start", .{
@@ -90,11 +89,12 @@ pub fn main(init: std.process.Init) !void {
     try set_up_flags(&parser);
 
     // Parse command-line arguments from the process init context
-    // var result = try parser.parseProcess(init);
-    // defer result.deinit();
     switch (make_switch_enum(init, &parser) catch .err) {
         .start => {
-            try start_ui(allocator);
+            var controller = Controller.init(allocator, io, init.environ_map);
+            defer controller.deinit();
+            stdout.print("[UI] starting UI\n", .{}) catch unreachable;
+            try controller.start_ui(allocator);
         },
         .doctor => {},
         .none => {},
@@ -104,47 +104,4 @@ pub fn main(init: std.process.Init) !void {
     }
 
     stdout.flush() catch unreachable;
-}
-
-pub fn start_ui(allocator: std.mem.Allocator) anyerror!void {
-
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const screenWidth = 1920;
-    const screenHeight = 1080;
-
-    rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
-    defer rl.closeWindow(); // Close window and OpenGL context
-    rl.setTargetFPS(0); // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
-
-    // Main game loop
-    while (!rl.windowShouldClose()) { // Detect window close button or ESC key
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
-
-        // Draw
-        //----------------------------------------------------------------------------------
-        glfwWaitEvents();
-        rl.clearBackground(.white);
-        rl.beginDrawing();
-        defer rl.endDrawing();
-        var main_dash = main_v.MainDashbord.init(
-            allocator,
-            screenWidth,
-            screenHeight,
-        );
-        defer main_dash.deinit();
-        var login_gui = login_v.LoginGui.init(allocator);
-        defer login_gui.deinit();
-        var settings_gui = settings_v.SettingsGui.init(allocator);
-        defer settings_gui.deinit();
-        main_dash.draw();
-        login_gui.draw();
-        settings_gui.draw();
-
-        //----------------------------------------------------------------------------------
-    }
 }

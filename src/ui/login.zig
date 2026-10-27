@@ -3,6 +3,7 @@ const raylib = @import("raylib");
 const raygui = @import("raygui");
 const Vector2 = @import("raylib").Vector2;
 const Rectangle = @import("raylib").Rectangle;
+const view = @import("view.zig");
 
 // Static text values never change, so they live as package-level consts
 const TextBox002Text: [:0]const u8 = "SAMPLE TEXT";
@@ -27,8 +28,8 @@ pub const LoginGui = struct {
         var self: LoginGui = undefined;
 
         // Init anchors
-        self.anchor01 = Vector2{ .x = 360, .y = 192 };
-        self.anchor02 = Vector2{ .x = 368, .y = 368 };
+        self.anchor01 = Vector2{ .x = @floatFromInt(@divTrunc(raylib.getScreenWidth(), 2)), .y = @floatFromInt(@divTrunc(raylib.getScreenHeight(), 2)) };
+        self.anchor02 = Vector2{ .x = self.anchor01.x + 8, .y = self.anchor01.y + 176 };
 
         // Init control variables
         self.window_box_000_active = true;
@@ -61,7 +62,7 @@ pub const LoginGui = struct {
         _ = self;
     }
 
-    pub fn draw(self: *LoginGui) void {
+    pub fn draw(self: *LoginGui, v: *view.gen_view()) void {
         const WindowBox000Text: [:0]const u8 = "login"; // WINDOWBOX: WindowBox000
         const Button001Text: [:0]const u8 = "login"; // BUTTON: Button001
         const LabelButton003Text: [:0]const u8 = "email"; // LABELBUTTON: LabelButton003
@@ -80,9 +81,10 @@ pub const LoginGui = struct {
             if (raygui.textBox(self.layout_recs[5], @constCast(TextBox005Text), self.text_box_005_edit_mode)) self.text_box_005_edit_mode = !self.text_box_005_edit_mode;
             if (raygui.button(self.layout_recs[6], Button007Text)) {} // Button007 logic
             _ = raygui.label(self.layout_recs[7], Label009Text);
+            _ = raygui.groupBox(self.layout_recs[8], GroupBox008Text);
+            _ = raygui.scrollPanel(self.layout_recs[9], ScrollPanel009Text, self.layout_recs[9], &self.scroll_panel_009_scroll_offset, &self.scroll_panel_009_scroll_view);
+        } else {
+            _ = v.back();
         }
-
-        _ = raygui.groupBox(self.layout_recs[8], GroupBox008Text);
-        _ = raygui.scrollPanel(self.layout_recs[9], ScrollPanel009Text, self.layout_recs[9], &self.scroll_panel_009_scroll_offset, &self.scroll_panel_009_scroll_view);
     }
 };

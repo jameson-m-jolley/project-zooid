@@ -12,7 +12,6 @@ const TextBox009Text: [:0]const u8 = "SAMPLE TEXT";
 pub const MainDashbord = struct {
     anchor01: Vector2,
     anchor02: Vector2,
-
     var_text_box_002_edit_mode: bool,
     var_spinner_005_edit_mode: bool,
     var_spinner_005_value: i32,
@@ -22,7 +21,6 @@ pub const MainDashbord = struct {
     var_text_box_009_edit_mode: bool,
     var_list_view_011_scroll_index: i32,
     var_list_view_011_active: i32,
-
     scroll_panel_scroll_view: Rectangle,
     scroll_panel_scroll_offset: Vector2,
     scroll_panel_bounds_offset: Vector2,
