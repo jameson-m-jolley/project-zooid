@@ -11,15 +11,14 @@ pub fn gen_zooid_client_struct(comptime build_options: shared.build_options) typ
         protocol: shared.email_protocol,
         user_email: ?*const [:0]u8,
         user_token: ?*const [:0]u8,
-        allocator: std.mem.Allocator,
 
         pub fn init(allocator: std.mem.Allocator) @This() {
+            _ = allocator;
             return .{
                 .port = 2342,
                 .protocol = .IMAP,
                 .user_email = null,
                 .user_token = null,
-                .allocator = allocator,
             };
         }
 

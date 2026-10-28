@@ -6,12 +6,10 @@ pub fn gen_communities_struct(comptime build_options: shared.build_options) type
     _ = build_options;
     return struct {
         pub const errors = error{};
-        allocator: std.mem.Allocator,
 
         pub fn init(allocator: std.mem.Allocator) @This() {
-            return .{
-                .allocator = allocator,
-            };
+            _ = allocator;
+            return .{};
         }
 
         pub fn deinit(this: *@This()) !void {

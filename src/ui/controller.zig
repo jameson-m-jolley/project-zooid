@@ -8,13 +8,11 @@ pub fn gen_controller() type {
     const View = view.gen_view();
     return struct {
         view: View,
-        allocator: std.mem.Allocator,
         zooid_client: zooid.client_type,
         zooid_system: zooid.system_type,
         pub fn init(allocator: std.mem.Allocator, io: std.Io, env_map: *std.process.Environ.Map) @This() {
             var ret: @This() = .{
                 .view = View.init(allocator),
-                .allocator = allocator,
                 .zooid_system = zooid.system_type.init(.{
                     .io = io,
                     .env_map = env_map,

@@ -6,11 +6,9 @@ pub fn gen_friends_struct(comptime build_options: shared.build_options) type {
     return struct {
         pub const errors = error{};
 
-        allocator: std.mem.Allocator,
         pub fn init(allocator: std.mem.Allocator) @This() {
-            return .{
-                .allocator = allocator,
-            };
+            _ = allocator;
+            return .{};
         }
         pub fn deinit(this: *@This()) !void {
             _ = this;
