@@ -35,15 +35,18 @@ pub fn gen_view() type {
             self.login_gui.deinit();
             self.settings_gui.deinit();
         }
-
-        pub fn draw(self: *@This()) void {
+        // returns true if the view stack is not empty, false if it is empty
+        pub fn draw(self: *@This()) bool {
             if (self.current()) |v| {
                 switch (v) {
                     views.login => self.login_gui.draw(self),
                     views.main => self.main_dash.draw(self),
                     views.settings => self.settings_gui.draw(self),
                 }
+            } else {
+                return false; // No current view, return false to indicate the stack is empty
             }
+            return true;
         }
 
         /// Navigate forward to a view, pushing it onto the stack.

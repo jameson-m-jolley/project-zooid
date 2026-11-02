@@ -131,6 +131,7 @@ pub const MainDashbord = struct {
             if (raygui.dropdownBox(self.layout_recs[10], DropdownBox010Text, &self.dropdown_box_010_active, self.dropdown_box_010_edit_mode) > 0) self.dropdown_box_010_edit_mode = !self.dropdown_box_010_edit_mode;
         } else {
             _ = v.back();
+            self.window_box_000_active = true; // Reopen the window box when returning to this view
         }
 
         raygui.unlock();

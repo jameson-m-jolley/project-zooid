@@ -6,6 +6,14 @@ const Vector2 = @import("raylib").Vector2;
 
 const Rectangle = @import("raylib").Rectangle;
 
+// this is the settings for the app
+// this holds all the user facing settings that the user can change,
+// and the app will use these settings to change its behavior
+pub const settings = struct {
+    cpu_throttle: u32 = 0,
+    ui_update_interval: f32 = 10.0, //default to 10 seconds, can be changed by user in settings
+};
+
 pub const SettingsGui = struct {
     anchor01: Vector2,
 

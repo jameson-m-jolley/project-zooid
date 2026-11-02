@@ -98,6 +98,7 @@ pub const LoginGui = struct {
             _ = raygui.scrollPanel(self.layout_recs[9], ScrollPanel009Text, self.layout_recs[9], &self.scroll_panel_009_scroll_offset, &self.scroll_panel_009_scroll_view);
         } else {
             _ = v.back();
+            self.window_box_000_active = true; // Reopen the window box when returning to this view
         }
     }
 };

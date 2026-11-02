@@ -2,7 +2,9 @@ const std = @import("std");
 const view = @import("view.zig");
 const rl = @import("raylib");
 const zooid = @import("libzooid");
-extern fn glfwWaitEvents() callconv(.c) void;
+const settings = @import("settings.zig");
+//extern fn glfwWaitEvents() callconv(.c) void;
+extern fn glfwWaitEventsTimeout(timeout: f64) callconv(.c) void;
 
 pub fn gen_controller() type {
     const View = view.gen_view();
@@ -10,7 +12,13 @@ pub fn gen_controller() type {
         view: View,
         zooid_client: zooid.client_type,
         zooid_system: zooid.system_type,
-        interaction_counter: u8 = 0,
+        ruining: bool = true,
+        interaction_counter: u8 = 5, // Counter for user interaction, starts at
+        settings: settings.settings = .{
+            .cpu_throttle = 0,
+            .ui_update_interval = 10.0,
+        },
+
         pub fn init(allocator: std.mem.Allocator, io: std.Io, env_map: *std.process.Environ.Map) @This() {
             var ret: @This() = .{
                 .view = View.init(allocator),
@@ -64,7 +72,7 @@ pub fn gen_controller() type {
             //--------------------------------------------------------------------------------------
 
             // Main game loop
-            while (!rl.windowShouldClose()) { // Detect window close button or ESC key
+            while (!rl.windowShouldClose() and controller.ruining) { // Detect window close button or ESC key
                 // Update
                 //----------------------------------------------------------------------------------
                 // TODO: Update your variables here
@@ -76,7 +84,7 @@ pub fn gen_controller() type {
                 if (!controller.is_interacting()) {
                     // If no interaction, we can perform background tasks or updates
                     // For example, we could check for new messages or perform periodic updates
-                    glfwWaitEvents();
+                    glfwWaitEventsTimeout(controller.settings.ui_update_interval); // Wait for events with a timeout of 10 seconds
                     // we are now in the part of the code where we know an interaction has happened, so we can reset the interaction counter
                     controller.interaction_update();
                 }
@@ -84,7 +92,17 @@ pub fn gen_controller() type {
                 rl.clearBackground(.white);
                 rl.beginDrawing();
                 defer rl.endDrawing();
-                controller.view.draw();
+                controller.ruining = controller.view.draw();
+                // Replace std.Thread.sleep with this:
+
+                // if on this may cause stuttering but this is a user preference,
+                //so we can make it a setting in the future,
+                //but for now, we will just use a hardcoded value of 10ms,
+                //which is a good balance between responsiveness and CPU usage
+                if (controller.settings.cpu_throttle > 0) {
+                    var ts = std.posix.timespec{ .sec = 0, .nsec = controller.settings.cpu_throttle * std.time.ns_per_ms };
+                    _ = std.posix.system.nanosleep(&ts, &ts);
+                }
 
                 //----------------------------------------------------------------------------------
             }
