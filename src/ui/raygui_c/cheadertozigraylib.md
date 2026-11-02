@@ -92,26 +92,39 @@ etc. raylib-zig namespaces them under `raygui` in snake_case:
 Zig forbids ignoring non-void return values; unused calls must be prefixed
 with `_ =`.
 
-### 3. Text values as static consts (not mutable buffers)
+### 3. Mutable text box buffers (required for all text boxes)
 
-C headers use mutable `char TextBoxNNNText[128]` buffers initialized with
-`strcpy`. Those mutable buffers are removed entirely — text never changes
-at runtime.
+Text boxes that accept user input must use mutable per-instance `[128:0]u8`
+buffers initialized at creation — not package-level `[:0]const u8` literals.
 
-Text box values are package-level `[:0]const u8` consts passed through
-`@constCast` to `raygui.textBox` (which takes mutable `[:0]u8`):
+**Rules (must be followed for every text box):**
+
+1. **Zero-fill once at init** with `@splat('\x00')` before any use. `var self = undefined`
+   leaves trailing bytes as uninitialized garbage, which raygui renders as repeated `?`
+   characters.
+2. **Never re-splat in `draw`** — that wipes user edits and makes text input impossible.
+3. **Never `@constCast` a `[:0]const u8` literal** for `raygui.textBox` — raygui writes
+   keystrokes directly into the buffer; writing to read-only const memory segfaults.
+4. **Pass `&self.text_box_NNN_text` directly** to `raygui.textBox` (no `@constCast`).
+
+**Pattern (from `login.zig`):**
 
 ```zig
-const TextBox002Text: [:0]const u8 = "type msg";
-// ...
-raygui.textBox(state.layout_recs[2], @constCast(TextBox002Text), state.var_text_box_002_edit_mode)
+// Struct field
+text_box_002_text: [128:0]u8,
+
+// In init — zero-fill once at creation
+self.text_box_002_text = @splat('\x00');
+
+// In draw — pass mutable buffer directly, no copySentinel, no @constCast
+if (raygui.textBox(self.layout_recs[2], &self.text_box_002_text, self.text_box_002_edit_mode)) ...
 ```
 
-No `[128:0]u8`, no `std.mem.copySentinel`, no per-instance text fields,
-no runtime initialization.
+This prevents:
+- **Segfaults** (writing keystrokes to read-only const memory via `@constCast`)
+- **Repeated `?` characters** (reading uninitialized garbage trailing bytes)
 
-`\0` is not a valid escape in this Zig; string literals already carry the
-sentinel.
+**Applies to:** `login.zig` (done), `main_dashbord.zig` (done), `settings.zig` (done).
 
 ### 4. Generated-C bugs present in the headers
 

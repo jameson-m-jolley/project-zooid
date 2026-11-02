@@ -40,8 +40,8 @@ pub fn gen_view() type {
             if (self.current()) |v| {
                 switch (v) {
                     views.login => self.login_gui.draw(self),
-                    views.main => self.main_dash.draw(),
-                    views.settings => self.settings_gui.draw(),
+                    views.main => self.main_dash.draw(self),
+                    views.settings => self.settings_gui.draw(self),
                 }
             }
         }

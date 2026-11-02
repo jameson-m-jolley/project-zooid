@@ -1,17 +1,17 @@
 const std = @import("std");
 const raylib = @import("raylib");
 const raygui = @import("raygui");
+const view = @import("view.zig");
 const Vector2 = @import("raylib").Vector2;
-const Rectangle = @import("raylib").Rectangle;
 
-// Static text values never change, so they live as package-level consts
-const TextBox017Text: [:0]const u8 = "SAMPLE TEXT";
+const Rectangle = @import("raylib").Rectangle;
 
 pub const SettingsGui = struct {
     anchor01: Vector2,
 
     window_box_000_active: bool,
     text_box_017_edit_mode: bool,
+    text_box_017_text: [128:0]u8,
 
     scroll_panel_004_scroll_view: Rectangle,
     scroll_panel_004_scroll_offset: Vector2,
@@ -25,6 +25,13 @@ pub const SettingsGui = struct {
         self.anchor01 = Vector2{ .x = 24, .y = 24 };
         self.window_box_000_active = true;
         self.text_box_017_edit_mode = false;
+
+        // Zero-fill text buffer once at creation so raygui.textBox does not render garbage '?'
+        self.text_box_017_text = @splat('\x00');
+
+        // Set initial text value
+        _ = std.mem.copySentinel(u8, 0, self.text_box_017_text[0..], "SAMPLE TEXT");
+
         self.scroll_panel_004_scroll_view = Rectangle{ .x = 0, .y = 0, .width = 0, .height = 0 };
         self.scroll_panel_004_scroll_offset = Vector2{ .x = 0, .y = 0 };
         self.scroll_panel_004_bounds_offset = Vector2{ .x = 0, .y = 0 };
@@ -42,7 +49,8 @@ pub const SettingsGui = struct {
     pub fn deinit(self: SettingsGui) void {
         _ = self;
     }
-    pub fn draw(self: *SettingsGui) void {
+    pub fn draw(self: *SettingsGui, v: *view.gen_view()) void {
+        _ = v;
         const WindowBox000Text: [:0]const u8 = "app settings "; // WINDOWBOX: WindowBox000
         const DummyRec018Text: [:0]const u8 = "sherch settings"; // DUMMYREC: DummyRec018
         const Button019Text: [:0]const u8 = "save"; // BUTTON: Button019
@@ -52,7 +60,7 @@ pub const SettingsGui = struct {
         const ScrollPanel004Text: ?[*:0]const u8 = null;
         if (self.window_box_000_active) {
             self.window_box_000_active = !(raygui.windowBox(self.layout_recs[0], WindowBox000Text) > 0);
-            if (raygui.textBox(self.layout_recs[1], @constCast(TextBox017Text), self.text_box_017_edit_mode)) self.text_box_017_edit_mode = !self.text_box_017_edit_mode;
+            if (raygui.textBox(self.layout_recs[1], &self.text_box_017_text, self.text_box_017_edit_mode)) self.text_box_017_edit_mode = !self.text_box_017_edit_mode;
             _ = raygui.dummyRec(self.layout_recs[2], DummyRec018Text);
             if (raygui.button(self.layout_recs[3], Button019Text)) {} // Button019 logic
             _ = raygui.scrollPanel(self.layout_recs[4], ScrollPanel004Text, self.layout_recs[4], &self.scroll_panel_004_scroll_offset, &self.scroll_panel_004_scroll_view);

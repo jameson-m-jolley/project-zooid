@@ -4,7 +4,7 @@ const shared = @import("shared_types.zig");
 
 pub fn gen_communities_struct(comptime build_options: shared.build_options) type {
     _ = build_options;
-    return struct {
+    return packed struct {
         pub const errors = error{};
 
         pub fn init(allocator: std.mem.Allocator) @This() {

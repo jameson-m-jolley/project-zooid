@@ -16,7 +16,7 @@ pub fn gen_voice_channels_struct(comptime build_options: shared.build_options) t
 
 pub fn gen_channels_struct(comptime build_options: shared.build_options) type {
     _ = build_options;
-    return struct {
+    return packed struct {
         pub const errors = error{};
 
         pub fn init(allocator: std.mem.Allocator) @This() {

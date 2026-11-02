@@ -3,7 +3,7 @@ const shared = @import("shared_types.zig");
 const sqlite = @import("sqlite");
 const system = @import("system.zig");
 pub fn gen_doctor_struct(comptime build_options: shared.build_options) type {
-    return struct {
+    return packed struct {
         pub const errors = error{
             no_io,
         };

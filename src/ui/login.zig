@@ -6,8 +6,6 @@ const Rectangle = @import("raylib").Rectangle;
 const view = @import("view.zig");
 
 // Static text values never change, so they live as package-level consts
-const TextBox002Text: [:0]const u8 = "SAMPLE TEXT";
-const TextBox005Text: [:0]const u8 = "SAMPLE TEXT";
 
 pub const LoginGui = struct {
     anchor01: Vector2,
@@ -16,6 +14,8 @@ pub const LoginGui = struct {
     window_box_000_active: bool,
     text_box_002_edit_mode: bool,
     text_box_005_edit_mode: bool,
+    text_box_002_text: [128:0]u8,
+    text_box_005_text: [128:0]u8,
 
     scroll_panel_009_scroll_view: Rectangle,
     scroll_panel_009_scroll_offset: Vector2,
@@ -35,6 +35,15 @@ pub const LoginGui = struct {
         self.window_box_000_active = true;
         self.text_box_002_edit_mode = false;
         self.text_box_005_edit_mode = false;
+
+        //you can use @splat to initialize the text buffers to all zeros, which is important for raygui.textBox to work correctly
+        self.text_box_002_text = @splat('\x00'); // Initialize to all zeros
+        self.text_box_005_text = @splat('\x00'); // Initialize to all zeros
+
+        // Set initial text values
+        _ = std.mem.copySentinel(u8, 0, self.text_box_002_text[0..], "email");
+        _ = std.mem.copySentinel(u8, 0, self.text_box_005_text[0..], "password");
+        // Mutable buffers so raygui.textBox can write keystrokes into them
 
         // Init scroll panel state
         self.scroll_panel_009_scroll_view = Rectangle{ .x = 0, .y = 0, .width = 0, .height = 0 };
@@ -66,19 +75,23 @@ pub const LoginGui = struct {
         const WindowBox000Text: [:0]const u8 = "login"; // WINDOWBOX: WindowBox000
         const Button001Text: [:0]const u8 = "login"; // BUTTON: Button001
         const LabelButton003Text: [:0]const u8 = "email"; // LABELBUTTON: LabelButton003
-        const LabelButton004Text: [:0]const u8 = "email password"; // LABELBUTTON: LabelButton004
+        const LabelButton004Text: [:0]const u8 = "password"; // LABELBUTTON: LabelButton004
         const Button007Text: [:0]const u8 = "clear"; // BUTTON: Button007
         const Label009Text: [:0]const u8 = ""; // LABEL: Label009
         const GroupBox008Text: [:0]const u8 = "console"; // GROUPBOX: GroupBox008
-        const ScrollPanel009Text: ?[*:0]const u8 = null;
+        var ScrollPanel009Text: ?[*:0]const u8 = null;
 
         if (self.window_box_000_active) {
             self.window_box_000_active = !(raygui.windowBox(self.layout_recs[0], WindowBox000Text) > 0);
-            if (raygui.button(self.layout_recs[1], Button001Text)) {} // Button001 logic
-            if (raygui.textBox(self.layout_recs[2], @constCast(TextBox002Text), self.text_box_002_edit_mode)) self.text_box_002_edit_mode = !self.text_box_002_edit_mode;
+            if (raygui.button(self.layout_recs[1], Button001Text)) {
+                v.goto(.main) catch {
+                    ScrollPanel009Text = "err going to main.";
+                };
+            } // Button001 logic
+            if (raygui.textBox(self.layout_recs[2], &self.text_box_002_text, self.text_box_002_edit_mode)) self.text_box_002_edit_mode = !self.text_box_002_edit_mode;
             if (raygui.labelButton(self.layout_recs[3], LabelButton003Text)) {} // LabelButton003 logic
             if (raygui.labelButton(self.layout_recs[4], LabelButton004Text)) {} // LabelButton004 logic
-            if (raygui.textBox(self.layout_recs[5], @constCast(TextBox005Text), self.text_box_005_edit_mode)) self.text_box_005_edit_mode = !self.text_box_005_edit_mode;
+            if (raygui.textBox(self.layout_recs[5], &self.text_box_005_text, self.text_box_005_edit_mode)) self.text_box_005_edit_mode = !self.text_box_005_edit_mode;
             if (raygui.button(self.layout_recs[6], Button007Text)) {} // Button007 logic
             _ = raygui.label(self.layout_recs[7], Label009Text);
             _ = raygui.groupBox(self.layout_recs[8], GroupBox008Text);
