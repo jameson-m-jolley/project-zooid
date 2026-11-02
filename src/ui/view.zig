@@ -23,7 +23,7 @@ pub fn gen_view() type {
             return .{
                 .view_stack = ViewList.empty,
                 .allocator = allocator,
-                .main_dash = main_dashbord.MainDashbord.init(allocator, 1920, 1080),
+                .main_dash = main_dashbord.MainDashbord.init(allocator),
                 .login_gui = login.LoginGui.init(allocator),
                 .settings_gui = settings.SettingsGui.init(allocator),
             };
