@@ -49,8 +49,8 @@ pub const SettingsGui = struct {
     pub fn deinit(self: SettingsGui) void {
         _ = self;
     }
+
     pub fn draw(self: *SettingsGui, v: *view.gen_view()) void {
-        _ = v;
         const WindowBox000Text: [:0]const u8 = "app settings "; // WINDOWBOX: WindowBox000
         const DummyRec018Text: [:0]const u8 = "sherch settings"; // DUMMYREC: DummyRec018
         const Button019Text: [:0]const u8 = "save"; // BUTTON: Button019
@@ -67,6 +67,12 @@ pub const SettingsGui = struct {
             if (raygui.button(self.layout_recs[5], Button005Text)) {} // Button005 logic
             if (raygui.button(self.layout_recs[6], Button006Text)) {} // Button006 logic
             if (raygui.button(self.layout_recs[7], Button007Text)) {} // Button007 logic
+        } else {
+            if (!v.back()) {
+                v.goto(.main) catch {}; // Navigate to main view if stack is empty
+            }
+            self.window_box_000_active = true; // Reset for next time
         }
+        // Return false to indicate no interaction is happening
     }
 };

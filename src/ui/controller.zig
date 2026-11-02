@@ -10,6 +10,7 @@ pub fn gen_controller() type {
         view: View,
         zooid_client: zooid.client_type,
         zooid_system: zooid.system_type,
+        interaction_counter: u8 = 0,
         pub fn init(allocator: std.mem.Allocator, io: std.Io, env_map: *std.process.Environ.Map) @This() {
             var ret: @This() = .{
                 .view = View.init(allocator),
@@ -27,6 +28,23 @@ pub fn gen_controller() type {
             self.view.deinit();
             self.zooid_client.deinit();
             self.zooid_system.deinit();
+        }
+
+        pub fn interaction_update(self: *@This()) void {
+            //std.debug.print("Interaction detected, resetting counter to 5\n", .{});
+            self.interaction_counter = 5; // Reset the interaction counter to 255 on user interaction
+        }
+
+        pub fn interaction_tick(self: *@This()) void {
+            //std.debug.print("Interaction tick, current counter: {}\n", .{self.interaction_counter});
+            if (self.interaction_counter > 0) {
+                self.interaction_counter -= 1; // Decrement the interaction counter if it's greater than 0
+            }
+        }
+
+        pub fn is_interacting(self: *@This()) bool {
+            self.interaction_tick(); // Call interaction_tick to update the counter
+            return self.interaction_counter > 0; // Return true if the interaction counter is greater than 0
         }
 
         pub fn start_ui(
@@ -54,7 +72,15 @@ pub fn gen_controller() type {
 
                 // Draw
                 //----------------------------------------------------------------------------------
-                glfwWaitEvents();
+
+                if (!controller.is_interacting()) {
+                    // If no interaction, we can perform background tasks or updates
+                    // For example, we could check for new messages or perform periodic updates
+                    glfwWaitEvents();
+                    // we are now in the part of the code where we know an interaction has happened, so we can reset the interaction counter
+                    controller.interaction_update();
+                }
+
                 rl.clearBackground(.white);
                 rl.beginDrawing();
                 defer rl.endDrawing();
