@@ -2,12 +2,14 @@ const std = @import("std");
 const main_dashbord = @import("main_dashbord.zig");
 const login = @import("login.zig");
 const settings = @import("settings.zig");
+const controller = @import("controller.zig");
 const view = @import("view.zig");
 
 pub const views = enum {
     login,
     main,
     settings,
+    friends,
 };
 
 pub fn gen_view() type {
@@ -36,12 +38,13 @@ pub fn gen_view() type {
             self.settings_gui.deinit();
         }
         // returns true if the view stack is not empty, false if it is empty
-        pub fn draw(self: *@This()) bool {
+        pub fn draw(self: *@This(), c: *controller.gen_controller()) bool {
             if (self.current()) |v| {
                 switch (v) {
-                    views.login => self.login_gui.draw(self),
+                    views.login => self.login_gui.draw(c),
                     views.main => self.main_dash.draw(self),
                     views.settings => self.settings_gui.draw(self),
+                    views.friends => {},
                 }
             } else {
                 return false; // No current view, return false to indicate the stack is empty

@@ -23,6 +23,10 @@ pub fn gen_zooid_system_obj(comptime build_options: shared.build_options) type {
             self.close_db();
         }
 
+        pub fn set_writer(self: *@This(), writer: *std.Io.Writer) void {
+            self.writer = writer;
+        }
+
         pub fn get_home_dir(self: *const @This()) ![]const u8 {
             return self.env_map.get("HOME") orelse return error.HomeDirNotFound;
         }

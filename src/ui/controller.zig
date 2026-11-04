@@ -12,6 +12,7 @@ pub fn gen_controller() type {
         view: View,
         zooid_client: zooid.client_type,
         zooid_system: zooid.system_type,
+        zooid_system_out_buffer: [1024:0]u8 = @splat('\x00'), // Initialize to all zeros,
         ruining: bool = true,
         interaction_counter: u8 = 5, // Counter for user interaction, starts at
         settings: settings.settings = .{
@@ -28,7 +29,12 @@ pub fn gen_controller() type {
                 }),
                 .zooid_client = zooid.client_type.init(allocator),
             };
+            var stdout_impl = std.Io.Writer.fixed(&ret.zooid_system_out_buffer);
+            ret.zooid_system.set_writer(&stdout_impl);
             ret.view.goto(.login) catch {};
+            if (ret.is_zooid_installed()) {
+                ret.zooid_system.print("ZOOID is installed and ready to use.\n", .{});
+            }
             return ret;
         }
 
@@ -53,6 +59,12 @@ pub fn gen_controller() type {
         pub fn is_interacting(self: *@This()) bool {
             self.interaction_tick(); // Call interaction_tick to update the counter
             return self.interaction_counter > 0; // Return true if the interaction counter is greater than 0
+        }
+
+        //pub fn update(self: *@This()) void {}
+
+        pub fn is_zooid_installed(self: *@This()) bool {
+            return zooid.doctor_type.check_if_db_exists(self.zooid_system) catch false;
         }
 
         pub fn start_ui(
@@ -87,12 +99,13 @@ pub fn gen_controller() type {
                     glfwWaitEventsTimeout(controller.settings.ui_update_interval); // Wait for events with a timeout of 10 seconds
                     // we are now in the part of the code where we know an interaction has happened, so we can reset the interaction counter
                     controller.interaction_update();
+                    // reset the counter to 5 on user interaction
                 }
 
                 rl.clearBackground(.white);
                 rl.beginDrawing();
                 defer rl.endDrawing();
-                controller.ruining = controller.view.draw();
+                controller.ruining = controller.view.draw(controller); // Draw the current view and update the running state
                 // Replace std.Thread.sleep with this:
 
                 // if on this may cause stuttering but this is a user preference,

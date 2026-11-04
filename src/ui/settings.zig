@@ -70,11 +70,19 @@ pub const SettingsGui = struct {
             self.window_box_000_active = !(raygui.windowBox(self.layout_recs[0], WindowBox000Text) > 0);
             if (raygui.textBox(self.layout_recs[1], &self.text_box_017_text, self.text_box_017_edit_mode)) self.text_box_017_edit_mode = !self.text_box_017_edit_mode;
             _ = raygui.dummyRec(self.layout_recs[2], DummyRec018Text);
-            if (raygui.button(self.layout_recs[3], Button019Text)) {} // Button019 logic
+            if (raygui.button(self.layout_recs[3], Button019Text)) {
+                // Button019 logic: Save settings
+            } // Button019 logic
             _ = raygui.scrollPanel(self.layout_recs[4], ScrollPanel004Text, self.layout_recs[4], &self.scroll_panel_004_scroll_offset, &self.scroll_panel_004_scroll_view);
-            if (raygui.button(self.layout_recs[5], Button005Text)) {} // Button005 logic
-            if (raygui.button(self.layout_recs[6], Button006Text)) {} // Button006 logic
-            if (raygui.button(self.layout_recs[7], Button007Text)) {} // Button007 logic
+            if (raygui.button(self.layout_recs[5], Button005Text)) {
+                // Button005 logic: Reset settings
+            } // Button005 logic
+            if (raygui.button(self.layout_recs[6], Button006Text)) {
+                // Button006 logic: Export settings
+            } // Button006 logic
+            if (raygui.button(self.layout_recs[7], Button007Text)) {
+                // Button007 logic: Load settings
+            } // Button007 logic
         } else {
             if (!v.back()) {
                 v.goto(.main) catch {}; // Navigate to main view if stack is empty

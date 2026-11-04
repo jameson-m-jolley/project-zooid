@@ -3,6 +3,7 @@ const raylib = @import("raylib");
 const raygui = @import("raygui");
 const Vector2 = @import("raylib").Vector2;
 const Rectangle = @import("raylib").Rectangle;
+const controller = @import("controller.zig");
 const view = @import("view.zig");
 
 // Static text values never change, so they live as package-level consts
@@ -71,7 +72,7 @@ pub const LoginGui = struct {
         _ = self;
     }
 
-    pub fn draw(self: *LoginGui, v: *view.gen_view()) void {
+    pub fn draw(self: *LoginGui, c: *controller.gen_controller()) void {
         const WindowBox000Text: [:0]const u8 = "login"; // WINDOWBOX: WindowBox000
         const Button001Text: [:0]const u8 = "login"; // BUTTON: Button001
         const LabelButton003Text: [:0]const u8 = "email"; // LABELBUTTON: LabelButton003
@@ -84,7 +85,7 @@ pub const LoginGui = struct {
         if (self.window_box_000_active) {
             self.window_box_000_active = !(raygui.windowBox(self.layout_recs[0], WindowBox000Text) > 0);
             if (raygui.button(self.layout_recs[1], Button001Text)) {
-                v.goto(.main) catch {
+                c.view.goto(.main) catch {
                     ScrollPanel009Text = "err going to main.";
                 };
             } // Button001 logic
@@ -92,12 +93,29 @@ pub const LoginGui = struct {
             if (raygui.labelButton(self.layout_recs[3], LabelButton003Text)) {} // LabelButton003 logic
             if (raygui.labelButton(self.layout_recs[4], LabelButton004Text)) {} // LabelButton004 logic
             if (raygui.textBox(self.layout_recs[5], &self.text_box_005_text, self.text_box_005_edit_mode)) self.text_box_005_edit_mode = !self.text_box_005_edit_mode;
-            if (raygui.button(self.layout_recs[6], Button007Text)) {} // Button007 logic
+            if (raygui.button(self.layout_recs[6], Button007Text)) {
+                self.text_box_002_text = @splat('\x00'); // Clear the email text box
+                self.text_box_005_text = @splat('\x00'); // Clear the password text box
+            } // Button007 logic
             _ = raygui.label(self.layout_recs[7], Label009Text);
             _ = raygui.groupBox(self.layout_recs[8], GroupBox008Text);
             _ = raygui.scrollPanel(self.layout_recs[9], ScrollPanel009Text, self.layout_recs[9], &self.scroll_panel_009_scroll_offset, &self.scroll_panel_009_scroll_view);
+            {
+                const startX: f32 = self.scroll_panel_009_scroll_view.x + self.scroll_panel_009_scroll_offset.x;
+                const startY: f32 = self.scroll_panel_009_scroll_view.y + self.scroll_panel_009_scroll_offset.y;
+                raylib.beginScissorMode(
+                    @intFromFloat(self.scroll_panel_009_scroll_view.x),
+                    @intFromFloat(self.scroll_panel_009_scroll_view.y),
+                    @intFromFloat(self.scroll_panel_009_scroll_view.width),
+                    @intFromFloat(self.scroll_panel_009_scroll_view.height),
+                );
+                defer raylib.endScissorMode();
+
+                // Draw the console text inside the scroll panel
+                raylib.drawText(&c.zooid_system_out_buffer, @intFromFloat(startX), @intFromFloat(startY), 10, .black);
+            }
         } else {
-            _ = v.back();
+            _ = c.view.back();
             self.window_box_000_active = true; // Reopen the window box when returning to this view
         }
     }

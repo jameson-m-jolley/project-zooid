@@ -110,7 +110,11 @@ pub const MainDashbord = struct {
                     ScrollPanel012Text = "err going to settings.";
                 };
             } // Button005 logic
-            if (raygui.button(self.layout_recs[6], Button006Text)) {} // Button006 logic
+            if (raygui.button(self.layout_recs[6], Button006Text)) {
+                v.goto(.friends) catch {
+                    ScrollPanel012Text = "err going to friends.";
+                };
+            } // Button006 logic
             if (raygui.textBox(self.layout_recs[7], &self.text_box_007_text, self.text_box_007_edit_mode)) self.text_box_007_edit_mode = !self.text_box_007_edit_mode;
             if (raygui.labelButton(self.layout_recs[8], LabelButton008Text)) {} // LabelButton008 logic
             _ = raygui.groupBox(self.layout_recs[9], GroupBox009Text);
